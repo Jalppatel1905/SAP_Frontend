@@ -20,52 +20,48 @@ body {
   }
 }
 
-.video-grid {
+/* 🔹 Updated grid to match Gather.town style */
+.grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-  gap: 5px;
-  position: absolute;
-  top: 35px;
-  left: 10px;  // Move the grid to the left side
-  max-height: calc(100% - 100px);
-  overflow-y: auto;
-  padding: 5px;
-  background: rgba(0, 0, 0, 0.05);
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); // Smaller videos like Gather.town
+  gap: 8px;
+  padding: 10px;
+  justify-items: center;
 }
 
-// 🔹 Hide videos initially
+/* 🔹 Updated video style to match Gather.town */
 .video-grid video {
-  width: 90%;
+  width: 100%; // Adjust video size based on grid size
+  max-width: 180px; // Limit size for consistency
   height: 100%;
+  aspect-ratio: 1 / 1; // Square shape like Gather.town
   object-fit: cover;
-  border-radius: 15px;
-  border: 3px solid rgb(0, 0, 0);
-  // Slightly dim by default
-  transition: opacity 0.3s ease-in-out;
+  border-radius: 16px;
+  border: 2px solid rgba(255, 255, 255, 0.6); // Soft white border
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15); // Subtle shadow for floating effect
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
-
-// 🔹 Show videos when hovering over the `.video-grid`
-.video-grid:hover video {
-  opacity: 0;
-  
+/* 🔹 Hover effect */
+.video-grid video:hover {
+  transform: scale(1.05); // Slight zoom effect on hover
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
 }
 
-
-
+/* 🔹 Hide videos smoothly */
 .video-grid video.hidden {
-  opacity: 1;
+  opacity: 0;
   visibility: hidden;
   height: 0;
   width: 0;
+  transition: opacity 0.3s ease;
 }
 
-
-
+/* 🔹 Scrollbar Styling (Cleaner and Subtle) */
 * {
   &:hover {
     &::-webkit-scrollbar-thumb {
-      background: #eee;
+      background: rgba(200, 200, 200, 0.8);
     }
   }
 
@@ -75,17 +71,17 @@ body {
   }
 
   &::-webkit-scrollbar-track {
-    background: rgba(#333, 0.2);
+    background: rgba(0, 0, 0, 0.1);
     border-radius: 3px;
   }
 
   &::-webkit-scrollbar-corner {
-    background: rgba(#333, 0.2);
+    background: rgba(0, 0, 0, 0.1);
   }
 
   &::-webkit-scrollbar-thumb {
-    transition: background 0.1s;
-    background: rgba(#eee, 0.8);
-    border-radius: 3px;
+    background: rgba(255, 255, 255, 0.4);
+    border-radius: 4px;
+    transition: background 0.2s;
   }
 }

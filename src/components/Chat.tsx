@@ -228,7 +228,8 @@ export default function Chat() {
             </ChatBox>
             <InputWrapper onSubmit={handleSubmit}>
               <InputTextField
-                inputRef={inputRef}
+                ref={inputRef}
+                autoFocus
                 fullWidth
                 placeholder="Press Enter to chat"
                 value={inputValue}
