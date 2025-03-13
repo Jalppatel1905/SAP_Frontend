@@ -20,17 +20,17 @@ body {
   }
 }
 
-.grid {
+.video-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 10px;
-}
-
-video {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  border-radius: 12px;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 5px;
+  position: absolute;
+  top: 35px;
+  right: 10px;  
+  max-height: calc(100% - 100px);
+  overflow-y: auto;
+  padding: 5px;
+  background: rgba(0, 0, 0, 0.05);
 }
 
 // 🔹 Hide videos initially
@@ -88,4 +88,4 @@ video {
     background: rgba(#eee, 0.8);
     border-radius: 3px;
   }
-} 
+}
