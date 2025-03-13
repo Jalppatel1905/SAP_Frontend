@@ -51,7 +51,6 @@ video {
 // 🔹 Show videos when hovering over the .video-grid
 .video-grid:hover video {
   transform: scale(1.05); // Slight zoom effect on hover
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
 }
 
 
