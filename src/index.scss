@@ -1,11 +1,8 @@
 body {
   margin: 0;
   padding: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu',
-    'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  box-sizing: border-box;
+  background-color: transparent; // Make entire background transparent
+  overflow: hidden; // Prevent scrolling from extra white space
 }
 
 *,
@@ -17,14 +14,18 @@ body {
 #phaser-container {
   canvas {
     display: block;
+    background-color: transparent;
   }
 }
 
 .grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 10px;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 8px;
+  padding: 0;
+  background-color: transparent; // Ensure no background on grid
 }
+
 
 video {
   width: 100%;
@@ -35,20 +36,19 @@ video {
 
 // 🔹 Hide videos initially
 .video-grid video {
-  width: 90%;
-  height: 100%;
+  width: 100%;
+  max-width: 180px;
+  aspect-ratio: 1 / 1;
   object-fit: cover;
-  border-radius: 15px;
-  border: 3px solid rgb(0, 0, 0);
-  // Slightly dim by default
-  transition: opacity 0.3s ease-in-out;
+  border-radius: 16px;
+  border: 2px solid rgba(255, 255, 255, 0.6);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
-
-// 🔹 Show videos when hovering over the `.video-grid`
-.video-grid:hover video {
-  opacity: 0;
-  
+.video-grid video:hover {
+  transform: scale(1.05);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
 }
 
 
