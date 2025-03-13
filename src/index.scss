@@ -22,8 +22,9 @@ body {
 
 .grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 10px;;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 8px;
+  justify-items: center;
 }
 
 video {
@@ -42,9 +43,8 @@ video {
   object-fit: cover;
   border-radius: 16px;
   border: 2px solid rgba(255, 255, 255, 0.6);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
   // Slightly dim by default
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  transition: opacity 0.3s ease-in-out;
 }
 
 
