@@ -1,10 +1,12 @@
 body {
   margin: 0;
   padding: 0;
-  background-color: transparent; // Make background transparent
-  overflow: hidden; // Prevent any scrollbars from white space
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu',
+    'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  box-sizing: border-box;
 }
-
 
 *,
 *:before,
@@ -15,49 +17,55 @@ body {
 #phaser-container {
   canvas {
     display: block;
-    background-color: transparent; // Ensure canvas background is transparent
   }
 }
 
-/* 🔹 Updated grid to match Gather.town style */
 .grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-  gap: 8px;
-  padding: 0; // Remove padding that could cause white edges
-  background-color: transparent;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 10px;
 }
 
-.video-grid video {
+video {
   width: 100%;
-  max-width: 180px;
-  aspect-ratio: 1 / 1;
+  height: 100%;
   object-fit: cover;
-  border-radius: 16px;
-  border: 2px solid rgba(255, 255, 255, 0.6);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  border-radius: 12px;
 }
 
-.video-grid video:hover {
-  transform: scale(1.05);
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+// 🔹 Hide videos initially
+.video-grid video {
+  width: 90%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 15px;
+  border: 3px solid rgb(0, 0, 0);
+  // Slightly dim by default
+  transition: opacity 0.3s ease-in-out;
 }
 
-/* 🔹 Hide videos smoothly */
-.video-grid video.hidden {
+
+// 🔹 Show videos when hovering over the `.video-grid`
+.video-grid:hover video {
   opacity: 0;
+  
+}
+
+
+
+.video-grid video.hidden {
+  opacity: 1;
   visibility: hidden;
   height: 0;
   width: 0;
-  transition: opacity 0.3s ease;
 }
 
-/* 🔹 Scrollbar Styling (Cleaner and Subtle) */
+
+
 * {
   &:hover {
     &::-webkit-scrollbar-thumb {
-      background: rgba(200, 200, 200, 0.8);
+      background: #eee;
     }
   }
 
@@ -67,17 +75,17 @@ body {
   }
 
   &::-webkit-scrollbar-track {
-    background: rgba(0, 0, 0, 0.1);
+    background: rgba(#333, 0.2);
     border-radius: 3px;
   }
 
   &::-webkit-scrollbar-corner {
-    background: rgba(0, 0, 0, 0.1);
+    background: rgba(#333, 0.2);
   }
 
   &::-webkit-scrollbar-thumb {
-    background: rgba(255, 255, 255, 0.4);
-    border-radius: 4px;
-    transition: background 0.2s;
+    transition: background 0.1s;
+    background: rgba(#eee, 0.8);
+    border-radius: 3px;
   }
 }
