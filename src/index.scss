@@ -1,12 +1,10 @@
 body {
   margin: 0;
   padding: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu',
-    'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  box-sizing: border-box;
+  background-color: transparent; // Make background transparent
+  overflow: hidden; // Prevent any scrollbars from white space
 }
+
 
 *,
 *:before,
@@ -17,34 +15,32 @@ body {
 #phaser-container {
   canvas {
     display: block;
+    background-color: transparent; // Ensure canvas background is transparent
   }
 }
 
 /* 🔹 Updated grid to match Gather.town style */
 .grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); // Smaller videos like Gather.town
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
   gap: 8px;
-  padding: 10px;
-  justify-items: center;
+  padding: 0; // Remove padding that could cause white edges
+  background-color: transparent;
 }
 
-/* 🔹 Updated video style to match Gather.town */
 .video-grid video {
-  width: 100%; // Adjust video size based on grid size
-  max-width: 180px; // Limit size for consistency
-  height: 100%;
-  aspect-ratio: 1 / 1; // Square shape like Gather.town
+  width: 100%;
+  max-width: 180px;
+  aspect-ratio: 1 / 1;
   object-fit: cover;
   border-radius: 16px;
-  border: 2px solid rgba(255, 255, 255, 0.6); // Soft white border
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15); // Subtle shadow for floating effect
+  border: 2px solid rgba(255, 255, 255, 0.6);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
   transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
-/* 🔹 Hover effect */
 .video-grid video:hover {
-  transform: scale(1.05); // Slight zoom effect on hover
+  transform: scale(1.05);
   box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
 }
 
