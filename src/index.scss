@@ -21,62 +21,24 @@ body {
 }
 
 .video-grid {
-  display: flex;
-  flex-direction: row; /* Arrange items horizontally (left to right) */
-  gap: 8px;
-  padding: 8px;
-  overflow-x: auto; /* Allow horizontal scrolling if needed */
-  height: 20vh; /* Adjust the height to be smaller */
-  width: auto; /* Auto width based on content */
-  background-color: rgba(24, 24, 24, 0.9);
-  border-radius: 12px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.6);
-  position: fixed; /* Fixed position at the top */
-  top: 10px; /* Positioned 10px from the top */
-  left: 50%; /* Center horizontally */
-  transform: translateX(-50%); /* Offset by 50% of its own width to center */
-  z-index: 10;
-  transition: all 0.2s ease;
-  
-}
-
-/* Styling for individual video cards */
-.video-card {
-  width: 90%; /* Adjust width based on available space */
-  max-width: 100px; /* Reduced width of individual video cards */
-  aspect-ratio: 16 / 9;
-  background-color: #121212;
-  border-radius: 8px;
-  overflow: hidden;
-  position: relative;
-  transition: transform 0.2s ease;
-  
-  &:hover {
-    transform: scale(1.03);
-  }
-  &.hidden {
-    display: none; /* Hides the video card */
-  }
-
-  video {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-  }
-}
-
-/* Keep the map visible and interactive */
-#map-container {
-  width: calc(100vw - 170px); /* Adjust for smaller video grid width */
-  height: 100vh;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, 160px);
+  grid-gap: 5px;
+  grid-auto-rows: 160px;
   position: absolute;
-  top: 0;
-  left: 0;
-  z-index: 5;
-  pointer-events: auto;
+  top: 35px;
+  right: 10px;
+  max-height: calc(100% - 100px);
+  overflow-y: auto;
 }
 
-
+.video-grid video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 5px;
+  border: 1px groove rgb(229, 251, 255);
+}
 
 .button-grid {
   width: 160px;
