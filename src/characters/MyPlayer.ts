@@ -15,7 +15,6 @@ import { ItemType } from '../types/Items'
 import { NavKeys } from '../types/KeyboardState'
 import { JoystickMovement } from '../components/Joystick'
 
-
 export default class MyPlayer extends Player {
   private playContainerBody: Phaser.Physics.Arcade.Body
   private chairOnSit?: Chair
@@ -69,42 +68,44 @@ export default class MyPlayer extends Player {
           const whiteboard = item as Whiteboard
           whiteboard.openDialog(network)
           break
-        case ItemType.VENDINGMACHINE:
-          // hacky and hard-coded, but leaving it as is for now
-          alert('You bought a coffee!');
+        case ItemType.VENDINGMACHINE: {
+          const vendingText = this.scene.add.text(this.x, this.y - 50, '☕ You bought a coffee!', {
+            fontSize: '16px',
+            fontFamily: 'Arial',
+            color: '#ffffff',
+            backgroundColor: '#333333',
+            padding: { left: 10, right: 10, top: 5, bottom: 5 },
+            align: 'center'
+          }).setOrigin(0.5).setDepth(1000)
+
+          this.scene.time.delayedCall(2000, () => {
+            vendingText.destroy()
+          })
+
           break
+        }
       }
     }
 
     switch (this.playerBehavior) {
       case PlayerBehavior.IDLE:
-        // if press E in front of selected chair
         if (Phaser.Input.Keyboard.JustDown(keyE) && item?.itemType === ItemType.CHAIR) {
           const chairItem = item as Chair
-          /**
-           * move player to the chair and play sit animation
-           * a delay is called to wait for player movement (from previous velocity) to end
-           * as the player tends to move one more frame before sitting down causing player
-           * not sitting at the center of the chair
-           */
           this.scene.time.addEvent({
             delay: 10,
             callback: () => {
-              // update character velocity and position
               this.setVelocity(0, 0)
               if (chairItem.itemDirection) {
                 this.setPosition(
                   chairItem.x + sittingShiftData[chairItem.itemDirection][0],
                   chairItem.y + sittingShiftData[chairItem.itemDirection][1]
                 ).setDepth(chairItem.depth + sittingShiftData[chairItem.itemDirection][2])
-                // also update playerNameContainer velocity and position
                 this.playContainerBody.setVelocity(0, 0)
                 this.playerContainer.setPosition(
                   chairItem.x + sittingShiftData[chairItem.itemDirection][0],
                   chairItem.y + sittingShiftData[chairItem.itemDirection][1] - 30
                 )
               }
-
               this.play(`${this.playerTexture}_sit_${chairItem.itemDirection}`, true)
               playerSelector.selectedItem = undefined
               if (chairItem.itemDirection === 'up') {
@@ -112,12 +113,10 @@ export default class MyPlayer extends Player {
               } else {
                 playerSelector.setPosition(0, 0)
               }
-              // send new location and anim to server
               network.updatePlayer(this.x, this.y, this.anims.currentAnim.key)
             },
             loop: false,
           })
-          // set up new dialog as player sits down
           chairItem.clearDialogBox()
           chairItem.setDialogBox('Press E to leave')
           this.chairOnSit = chairItem
@@ -145,20 +144,18 @@ export default class MyPlayer extends Player {
         if (cursors.right?.isDown || cursors.D?.isDown || joystickRight) vx += speed
         if (cursors.up?.isDown || cursors.W?.isDown || joystickUp) {
           vy -= speed
-          this.setDepth(this.y) //change player.depth if player.y changes
+          this.setDepth(this.y)
         }
         if (cursors.down?.isDown || cursors.S?.isDown || joystickDown) {
           vy += speed
-          this.setDepth(this.y) //change player.depth if player.y changes
+          this.setDepth(this.y)
         }
-        // update character velocity
+
         this.setVelocity(vx, vy)
         this.body.velocity.setLength(speed)
-        // also update playerNameContainer velocity
         this.playContainerBody.setVelocity(vx, vy)
         this.playContainerBody.velocity.setLength(speed)
 
-        // update animation according to velocity and send new location and anim to server
         if (vx !== 0 || vy !== 0) network.updatePlayer(this.x, this.y, this.anims.currentAnim.key)
         if (vx > 0) {
           this.play(`${this.playerTexture}_run_right`, true)
@@ -172,17 +169,14 @@ export default class MyPlayer extends Player {
           const parts = this.anims.currentAnim.key.split('_')
           parts[1] = 'idle'
           const newAnim = parts.join('_')
-          // this prevents idle animation keeps getting called
           if (this.anims.currentAnim.key !== newAnim) {
             this.play(parts.join('_'), true)
-            // send new location and anim to server
             network.updatePlayer(this.x, this.y, this.anims.currentAnim.key)
           }
         }
         break
 
       case PlayerBehavior.SITTING:
-        // back to idle if player press E while sitting
         if (Phaser.Input.Keyboard.JustDown(keyE)) {
           const parts = this.anims.currentAnim.key.split('_')
           parts[1] = 'idle'

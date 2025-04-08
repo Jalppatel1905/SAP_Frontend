@@ -19,7 +19,7 @@ import {
   pushPlayerJoinedMessage,
   pushPlayerLeftMessage,
 } from '../stores/ChatStore'
-import { setWhiteboardUrls } from '../stores/WhiteboardStore'
+import { openWhiteboardDialog, closeWhiteboardDialog } from '../stores/WhiteboardStore'
 
 export default class Network {
   private client: Client
@@ -140,12 +140,12 @@ export default class Network {
 
     // new instance added to the whiteboards MapSchema
     this.room.state.whiteboards.onAdd = (whiteboard: IWhiteboard, key: string) => {
-      store.dispatch(
-        setWhiteboardUrls({
-          whiteboardId: key,
-          roomId: whiteboard.roomId,
-        })
-      )
+    //  store.dispatch(
+    //    setWhiteboardUrls({
+    //      whiteboardId: key,
+    //      roomId: whiteboard.roomId,
+    //    })
+    //  )
       // track changes on every child object's connectedUser
       whiteboard.connectedUser.onAdd = (item, index) => {
         phaserEvents.emit(Event.ITEM_USER_ADDED, item, key, ItemType.WHITEBOARD)

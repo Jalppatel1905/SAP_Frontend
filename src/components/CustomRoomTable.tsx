@@ -1,47 +1,68 @@
 import React, { useState } from 'react'
 import styled from 'styled-components'
-import Button from '@mui/material/Button'
-import Paper from '@mui/material/Paper'
-import TableContainer from '@mui/material/TableContainer'
-import Table from '@mui/material/Table'
-import TableRow from '@mui/material/TableRow'
-import TableCell from '@mui/material/TableCell'
-import TableHead from '@mui/material/TableHead'
-import TableBody from '@mui/material/TableBody'
-import Tooltip from '@mui/material/Tooltip'
-import TextField from '@mui/material/TextField'
-import Dialog from '@mui/material/Dialog'
-import DialogActions from '@mui/material/DialogActions'
-import DialogContent from '@mui/material/DialogContent'
-import Alert from '@mui/material/Alert'
-import Avatar from '@mui/material/Avatar'
+import {
+  Button,
+  Paper,
+  TableContainer,
+  Table,
+  TableRow,
+  TableCell,
+  TableHead,
+  TableBody,
+  Tooltip,
+  TextField,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  Alert,
+  Avatar,
+} from '@mui/material'
 import PeopleAltIcon from '@mui/icons-material/PeopleAlt'
 import LockIcon from '@mui/icons-material/Lock'
+
 import { useAppSelector } from '../hooks'
 import { getAvatarString, getColorByString } from '../util'
-
 import phaserGame from '../PhaserGame'
 import Bootstrap from '../scenes/Bootstrap'
 
 const MessageText = styled.p`
-  margin: 10px;
+  margin: 20px;
   font-size: 18px;
   color: #eee;
   text-align: center;
 `
 
-
-const CustomRoomTableContainer = styled(TableContainer)<{
-  component: React.ElementType
-}>`
+const CustomRoomTableContainer = styled(({ component, ...rest }) => (
+  <TableContainer component={component} {...rest} />
+))`
   max-height: 500px;
+  background: #1d2233;
+  border-radius: 10px;
+  box-shadow: 0 0 10px #0000004f;
 
   table {
     min-width: 650px;
+
+    thead {
+      background-color: #2b2f4c;
+    }
+
+    th {
+      color: #bbb;
+      font-weight: 600;
+    }
+
+    td {
+      color: #eee;
+    }
   }
 `
 
 const TableRowWrapper = styled(TableRow)`
+  &:hover {
+    background-color: #2a2f47;
+  }
+
   &:last-child td,
   &:last-child th {
     border: 0;
@@ -53,19 +74,17 @@ const TableRowWrapper = styled(TableRow)`
     font-size: 15px;
   }
 
-  .name {
-    min-width: 100px;
+  .name, .description {
     overflow-wrap: anywhere;
   }
 
   .description {
-    min-width: 200px;
-    overflow-wrap: anywhere;
+    color: #ccc;
   }
 
   .join-wrapper {
     display: flex;
-    gap: 3px;
+    gap: 5px;
     align-items: center;
   }
 
@@ -75,14 +94,24 @@ const TableRowWrapper = styled(TableRow)`
 `
 
 const PasswordDialog = styled(Dialog)`
+  .MuiDialog-paper {
+    background: #2b2f4c;
+    padding: 20px;
+  }
+
   .dialog-content {
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    gap: 15px;
   }
 
-  .MuiDialog-paper {
-    background: #222639;
+  .MuiFormLabel-root,
+  .MuiInputBase-root {
+    color: #eee !important;
+  }
+
+  .MuiOutlinedInput-notchedOutline {
+    border-color: #666 !important;
   }
 `
 
@@ -110,7 +139,6 @@ export const CustomRoomTable = () => {
   const handlePasswordSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault()
     const isValidPassword = password !== ''
-
     if (isValidPassword === passwordFieldEmpty) setPasswordFieldEmpty(!passwordFieldEmpty)
     if (isValidPassword) handleJoinClick(selectedRoom, password)
   }
@@ -127,7 +155,7 @@ export const CustomRoomTable = () => {
   ) : (
     <>
       <CustomRoomTableContainer component={Paper}>
-        <Table>
+        <Table stickyHeader>
           <TableHead>
             <TableRow>
               <TableCell></TableCell>
@@ -137,12 +165,11 @@ export const CustomRoomTable = () => {
               <TableCell align="center">
                 <PeopleAltIcon />
               </TableCell>
-              <TableCell align="right"></TableCell>
+              <TableCell align="right">Action</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
-            {availableRooms.map((room) => {
-              const { roomId, metadata, clients } = room
+            {availableRooms.map(({ roomId, metadata, clients }) => {
               const { name, description, hasPassword } = metadata
               return (
                 <TableRowWrapper key={roomId}>
@@ -151,23 +178,20 @@ export const CustomRoomTable = () => {
                       {getAvatarString(name)}
                     </Avatar>
                   </TableCell>
-                  <TableCell>
-                    <div className="name">{name}</div>
-                  </TableCell>
-                  <TableCell>
-                    <div className="description">{description}</div>
-                  </TableCell>
+                  <TableCell className="name">{name}</TableCell>
+                  <TableCell className="description">{description}</TableCell>
                   <TableCell>{roomId}</TableCell>
                   <TableCell align="center">{clients}</TableCell>
-                  <TableCell align="center">
-                    <Tooltip title={hasPassword ? 'Password required' : ''}>
+                  <TableCell align="right">
+                    <Tooltip title={hasPassword ? 'Password required' : 'Join Room'}>
                       <Button
-                        variant="outlined"
+                        variant="contained"
                         color="secondary"
+                        size="small"
                         onClick={() => {
                           if (hasPassword) {
-                            setShowPasswordDialog(true)
                             setSelectedRoom(roomId)
+                            setShowPasswordDialog(true)
                           } else {
                             handleJoinClick(roomId, null)
                           }
@@ -186,10 +210,11 @@ export const CustomRoomTable = () => {
           </TableBody>
         </Table>
       </CustomRoomTableContainer>
+
       <PasswordDialog open={showPasswordDialog} onClose={resetPasswordDialog}>
         <form onSubmit={handlePasswordSubmit}>
           <DialogContent className="dialog-content">
-            <MessageText>This a private room, please enter password:</MessageText>
+            <MessageText>This is a private room. Please enter the password:</MessageText>
             <TextField
               autoFocus
               fullWidth
@@ -211,10 +236,10 @@ export const CustomRoomTable = () => {
             )}
           </DialogContent>
           <DialogActions>
-            <Button color="secondary" onClick={resetPasswordDialog}>
+            <Button onClick={resetPasswordDialog} color="secondary">
               Cancel
             </Button>
-            <Button color="secondary" type="submit">
+            <Button type="submit" color="secondary" variant="contained">
               Join
             </Button>
           </DialogActions>

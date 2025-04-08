@@ -2,6 +2,8 @@ import React from 'react'
 import styled from 'styled-components'
 import IconButton from '@mui/material/IconButton'
 import CloseIcon from '@mui/icons-material/Close'
+import { Tldraw } from 'tldraw'
+import 'tldraw/tldraw.css'
 
 import { useAppSelector, useAppDispatch } from '../hooks'
 import { closeWhiteboardDialog } from '../stores/WhiteboardStore'
@@ -12,62 +14,54 @@ const Backdrop = styled.div`
   left: 0;
   width: 100vw;
   height: 100vh;
-  overflow: hidden;
-  padding: 16px 180px 16px 16px;
-  width: 100%;
-  height: 100%;
+  background: rgba(0, 0, 0, 0.6);
+  z-index: 9999;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 `
+
 const Wrapper = styled.div`
-  width: 100%;
-  height: 100%;
-  background: #222639;
-  border-radius: 16px;
-  padding: 16px;
-  color: #eee;
+  width: 90%;
+  height: 90%;
+  background: #1f1f2f;
+  border-radius: 20px;
   position: relative;
   display: flex;
   flex-direction: column;
-  min-width: max-content;
-
-  .close {
-    position: absolute;
-    top: 0px;
-    right: 0px;
-  }
+  overflow: hidden;
 `
 
-const WhiteboardWrapper = styled.div`
-  flex: 1;
-  border-radius: 25px;
-  overflow: hidden;
-  margin-right: 25px;
+const CloseButton = styled(IconButton)`
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  z-index: 10;
+  color: white;
+`
 
-  iframe {
-    width: 100%;
-    height: 100%;
-    background: #fff;
-  }
+const TldrawWrapper = styled.div`
+  flex: 1;
+  border-radius: 20px;
+  overflow: hidden;
+  height: 100%;
 `
 
 export default function WhiteboardDialog() {
-  const whiteboardUrl = useAppSelector((state) => state.whiteboard.whiteboardUrl)
+  const whiteboardOpen = useAppSelector((state) => state.whiteboard.whiteboardDialogOpen)
   const dispatch = useAppDispatch()
+
+  if (!whiteboardOpen) return null
 
   return (
     <Backdrop>
       <Wrapper>
-        <IconButton
-          aria-label="close dialog"
-          className="close"
-          onClick={() => dispatch(closeWhiteboardDialog())}
-        >
+        <CloseButton onClick={() => dispatch(closeWhiteboardDialog())}>
           <CloseIcon />
-        </IconButton>
-        {whiteboardUrl && (
-          <WhiteboardWrapper>
-            <iframe title="white board" src={whiteboardUrl} />
-          </WhiteboardWrapper>
-        )}
+        </CloseButton>
+        <TldrawWrapper>
+          <Tldraw />
+        </TldrawWrapper>
       </Wrapper>
     </Backdrop>
   )

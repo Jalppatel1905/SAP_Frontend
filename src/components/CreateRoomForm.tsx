@@ -14,8 +14,17 @@ import phaserGame from '../PhaserGame'
 import Bootstrap from '../scenes/Bootstrap'
 
 const CreateRoomFormWrapper = styled.form`
-  
-  `;
+  width: 100%;
+  max-width: 400px;
+  margin: 40px auto;
+  padding: 32px;
+  border-radius: 16px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  background-color: #1e1e1e;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+`
 
 export const CreateRoomForm = () => {
   const [values, setValues] = useState<IRoomData>({
@@ -42,7 +51,6 @@ export const CreateRoomForm = () => {
     if (isValidDescription === descriptionFieldEmpty)
       setDescriptionFieldEmpty(!descriptionFieldEmpty)
 
-    // create custom room if name and description are not empty
     if (isValidName && isValidDescription && lobbyJoined) {
       const bootstrap = phaserGame.scene.keys.bootstrap as Bootstrap
       bootstrap.network
@@ -55,16 +63,18 @@ export const CreateRoomForm = () => {
   return (
     <CreateRoomFormWrapper onSubmit={handleSubmit}>
       <TextField
-        label="Name"
+        fullWidth
+        label="Room Name"
         variant="outlined"
         color="secondary"
         autoFocus
         error={nameFieldEmpty}
-        helperText={nameFieldEmpty && 'Name is required'}
+        helperText={nameFieldEmpty && 'Room name is required'}
         onChange={handleChange('name')}
       />
 
       <TextField
+        fullWidth
         label="Description"
         variant="outlined"
         color="secondary"
@@ -76,6 +86,7 @@ export const CreateRoomForm = () => {
       />
 
       <TextField
+        fullWidth
         type={showPassword ? 'text' : 'password'}
         label="Password (optional)"
         onChange={handleChange('password')}
@@ -94,8 +105,9 @@ export const CreateRoomForm = () => {
           ),
         }}
       />
-      <Button variant="contained" color="secondary" type="submit">
-        Create
+
+      <Button variant="contained" color="secondary" type="submit" size="large">
+        🚀 Create Room
       </Button>
     </CreateRoomFormWrapper>
   )

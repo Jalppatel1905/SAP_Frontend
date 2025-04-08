@@ -16,8 +16,6 @@ export default class WebRTC {
     const sanitizedId = this.replaceInvalidId(userId)
     this.myPeer = new Peer(sanitizedId)
     this.network = network
-    console.log('userId:', userId)
-    console.log('sanitizedId:', sanitizedId)
 
     this.myPeer.on('error', (err) => {
       console.log(err.type)
@@ -75,7 +73,6 @@ export default class WebRTC {
     if (this.myStream) {
       const sanitizedId = this.replaceInvalidId(userId)
       if (!this.peers.has(sanitizedId)) {
-        console.log('calling', sanitizedId)
         const call = this.myPeer.call(sanitizedId, this.myStream)
         const video = document.createElement('video')
         this.peers.set(sanitizedId, { call, video })
@@ -90,36 +87,37 @@ export default class WebRTC {
   addVideoStream(video: HTMLVideoElement, stream: MediaStream) {
     video.srcObject = stream
     video.playsInline = true
-    video.muted = false // Keep the video unmuted for other users
-    video.style.transform = 'scaleX(1)' // Fix mirror effect
+    video.muted = false
     this.myVideo.style.transform = 'scaleX(-1)'
     this.myVideo.style.objectFit = 'cover'
+
+    video.style.cssText = `
+      width: 140px;
+      height: 140px;
+      object-fit: cover;
+      border-radius: 20px;
+      margin: 8px;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
+      border: 3px solid rgba(255, 255, 255, 0.1);
+      transition: all 0.3s ease;
+      backdrop-filter: blur(4px);
+    `
+
+    video.addEventListener('mouseover', () => {
+      video.style.transform = 'scale(1.05)'
+      video.style.boxShadow = '0 12px 24px rgba(0, 0, 0, 0.35)'
+    })
+
+    video.addEventListener('mouseout', () => {
+      video.style.transform = 'scale(1)'
+      video.style.boxShadow = '0 8px 20px rgba(0, 0, 0, 0.25)'
+    })
 
     video.addEventListener('loadedmetadata', () => {
       video.play()
     })
 
     if (this.videoGrid) {
-      video.style.cssText = `
-        width: 120px;
-        height: 120px;
-        object-fit: cover;
-        border-radius: 16px;
-        margin: 0 8px;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-        transition: transform 0.2s ease, box-shadow 0.2s ease;
-      `
-
-      video.addEventListener('mouseover', () => {
-        video.style.transform = 'scale(1.05)'
-        video.style.boxShadow = '0 6px 18px rgba(0, 0, 0, 0.4)'
-      })
-
-      video.addEventListener('mouseout', () => {
-        video.style.transform = 'scale(1)'
-        video.style.boxShadow = '0 4px 12px rgba(0, 0, 0, 0.3)'
-      })
-
       this.videoGrid.style.cssText = `
         display: flex;
         justify-content: center;
@@ -133,9 +131,7 @@ export default class WebRTC {
         overflow-x: auto;
         white-space: nowrap;
         max-width: 90vw;
-        box-shadow: none;
       `
-
       this.videoGrid.append(video)
     }
   }
@@ -168,15 +164,17 @@ export default class WebRTC {
     buttonContainer.id = 'webrtc-button-container'
     buttonContainer.style.cssText = `
       position: fixed;
-      bottom: 20px;
+      bottom: 24px;
       left: 50%;
       transform: translateX(-50%);
       display: flex;
-      gap: 15px;
-      background: rgba(24, 26, 42, 0.9);
-      padding: 10px 20px;
-      border-radius: 12px;
-      box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);
+      gap: 16px;
+      padding: 14px 24px;
+      background: rgba(255, 255, 255, 0.08);
+      backdrop-filter: blur(12px);
+      border-radius: 18px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.25);
+      z-index: 1000;
     `
 
     const createButton = (icon: string, tooltip: string, colorOn: string, colorOff: string, initialState: boolean) => {
@@ -184,23 +182,27 @@ export default class WebRTC {
       button.innerHTML = `<i class="fas ${icon}"></i>`
       button.title = tooltip
       button.style.cssText = `
-        width: 50px;
-        height: 50px;
-        border: none;
+        width: 55px;
+        height: 55px;
         border-radius: 50%;
-        font-size: 18px;
-        color: white;
+        font-size: 22px;
+        border: none;
+        outline: none;
         cursor: pointer;
-        transition: background 0.3s ease;
         display: flex;
         align-items: center;
         justify-content: center;
+        transition: background 0.25s ease, transform 0.2s;
         background-color: ${initialState ? colorOn : colorOff};
+        color: white;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
       `
+      button.onmouseenter = () => (button.style.transform = 'scale(1.1)')
+      button.onmouseleave = () => (button.style.transform = 'scale(1)')
       return button
     }
 
-    const audioButton = createButton('fa-microphone', 'Mute', '#4CAF50', '#FF4B4B', true)
+    const audioButton = createButton('fa-microphone', 'Mute/Unmute', '#4CAF50', '#FF4B4B', true)
     audioButton.addEventListener('click', () => {
       if (this.myStream) {
         const audioTrack = this.myStream.getAudioTracks()[0]
@@ -210,7 +212,7 @@ export default class WebRTC {
       }
     })
 
-    const videoButton = createButton('fa-video', 'Turn Video Off', '#4CAF50', '#FF4B4B', true)
+    const videoButton = createButton('fa-video', 'Turn Video On/Off', '#4CAF50', '#FF4B4B', true)
     videoButton.addEventListener('click', () => {
       if (this.myStream) {
         const videoTrack = this.myStream.getVideoTracks()[0]

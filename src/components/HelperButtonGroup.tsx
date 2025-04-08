@@ -11,8 +11,6 @@ import DarkModeIcon from '@mui/icons-material/DarkMode'
 import CloseIcon from '@mui/icons-material/Close'
 import LightbulbIcon from '@mui/icons-material/Lightbulb'
 import ArrowRightIcon from '@mui/icons-material/ArrowRight'
-import GitHubIcon from '@mui/icons-material/GitHub'
-import TwitterIcon from '@mui/icons-material/Twitter'
 import VideogameAssetIcon from '@mui/icons-material/VideogameAsset'
 import VideogameAssetOffIcon from '@mui/icons-material/VideogameAssetOff'
 
@@ -24,15 +22,16 @@ import { getAvatarString, getColorByString } from '../util'
 const Backdrop = styled.div`
   position: fixed;
   display: flex;
-  gap: 10px;
-  bottom: 16px;
-  right: 16px;
+  gap: 16px;
+  bottom: 24px;
+  right: 24px;
   align-items: flex-end;
+  z-index: 1000;
 
   .wrapper-group {
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    gap: 16px;
   }
 `
 
@@ -40,67 +39,80 @@ const Wrapper = styled.div`
   position: relative;
   font-size: 16px;
   color: #eee;
-  background: #222639;
-  box-shadow: 0px 0px 5px #0000006f;
-  border-radius: 16px;
-  padding: 15px 35px 15px 15px;
+  background: #1c1f2e;
+  box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.5);
+  border-radius: 20px;
+  padding: 20px 40px 20px 20px;
   display: flex;
   flex-direction: column;
-  align-items: center;
+  align-items: flex-start;
+  min-width: 320px;
 
   .close {
     position: absolute;
-    top: 15px;
-    right: 15px;
+    top: 12px;
+    right: 12px;
+    color: #bbb;
   }
 
   .tip {
-    margin-left: 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 12px;
+    font-size: 14px;
+    color: #ccc;
+  }
+
+  ul {
+    padding-left: 20px;
+    margin: 10px 0 0 0;
+  }
+
+  li {
+    margin-bottom: 8px;
   }
 `
 
 const ButtonGroup = styled.div`
   display: flex;
-  gap: 10px;
+  gap: 12px;
 `
 
 const Title = styled.h3`
-  font-size: 24px;
+  font-size: 22px;
   color: #eee;
-  text-align: center;
+  text-align: left;
+  margin: 0 0 10px 0;
 `
 
 const RoomName = styled.div`
-  margin: 10px 20px;
-  max-width: 460px;
-  max-height: 150px;
-  overflow-wrap: anywhere;
-  overflow-y: auto;
   display: flex;
-  gap: 10px;
-  justify-content: center;
+  gap: 12px;
   align-items: center;
+  margin-bottom: 10px;
 
   h3 {
-    font-size: 24px;
+    font-size: 20px;
     color: #eee;
+    margin: 0;
   }
 `
 
 const RoomDescription = styled.div`
-  margin: 0 20px;
-  max-width: 460px;
-  max-height: 150px;
-  overflow-wrap: anywhere;
-  overflow-y: auto;
-  font-size: 16px;
+  font-size: 14px;
   color: #c2c2c2;
   display: flex;
-  justify-content: center;
+  align-items: center;
+  gap: 6px;
+  margin-top: 4px;
 `
 
 const StyledFab = styled(Fab)<{ target?: string }>`
+  background: #2d3148;
+  color: #eee;
   &:hover {
+    background: #394065;
     color: #1ea2df;
   }
 `
@@ -126,6 +138,7 @@ export default function HelperButtonGroup() {
             </StyledFab>
           </Tooltip>
         )}
+
         {showRoomInfo && (
           <Wrapper>
             <IconButton className="close" onClick={() => setShowRoomInfo(false)} size="small">
@@ -138,47 +151,37 @@ export default function HelperButtonGroup() {
               <h3>{roomName}</h3>
             </RoomName>
             <RoomDescription>
-              <ArrowRightIcon /> ID: {roomId}
+              <ArrowRightIcon fontSize="small" /> ID: {roomId}
             </RoomDescription>
             <RoomDescription>
-              <ArrowRightIcon /> Description: {roomDescription}
+              <ArrowRightIcon fontSize="small" /> Description: {roomDescription}
             </RoomDescription>
-            <p className="tip">
-              <LightbulbIcon />
-              Shareable link coming up 😄
-            </p>
+            <div className="tip">
+              <LightbulbIcon fontSize="small" /> Shareable link coming up 😄
+            </div>
           </Wrapper>
         )}
+
         {showControlGuide && (
           <Wrapper>
-            <Title>Controls</Title>
             <IconButton className="close" onClick={() => setShowControlGuide(false)} size="small">
               <CloseIcon />
             </IconButton>
+            <Title>Controls</Title>
             <ul>
-              <li>
-                <strong>W, A, S, D or arrow keys</strong> to move
-              </li>
-              <li>
-                <strong>E</strong> to sit down (when facing a chair)
-              </li>
-              <li>
-                <strong>R</strong> to use computer to screen share (when facing a computer)
-              </li>
-              <li>
-                <strong>Enter</strong> to open chat
-              </li>
-              <li>
-                <strong>ESC</strong> to close chat
-              </li>
+              <li><strong>W, A, S, D</strong> or <strong>arrow keys</strong> to move</li>
+              <li><strong>E</strong> to sit down (when facing a chair)</li>
+              <li><strong>R</strong> to use computer to screen share (when facing a computer)</li>
+              <li><strong>Enter</strong> to open chat</li>
+              <li><strong>ESC</strong> to close chat</li>
             </ul>
-            <p className="tip">
-              <LightbulbIcon />
-              Video connection will start if you are close to someone else
-            </p>
+            <div className="tip">
+              <LightbulbIcon fontSize="small" /> Video starts if you’re near someone
+            </div>
           </Wrapper>
         )}
       </div>
+
       <ButtonGroup>
         {roomJoined && (
           <>
@@ -206,7 +209,7 @@ export default function HelperButtonGroup() {
             </Tooltip>
           </>
         )}
-        
+
         <Tooltip title="Switch Background Theme">
           <StyledFab size="small" onClick={() => dispatch(toggleBackgroundMode())}>
             {backgroundMode === BackgroundMode.DAY ? <DarkModeIcon /> : <LightModeIcon />}

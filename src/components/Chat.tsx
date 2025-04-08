@@ -8,6 +8,7 @@ import InputBase from '@mui/material/InputBase'
 import InsertEmoticonIcon from '@mui/icons-material/InsertEmoticon'
 import ChatBubbleOutlineIcon from '@mui/icons-material/ChatBubbleOutline'
 import CloseIcon from '@mui/icons-material/Close'
+
 import Picker from '@emoji-mart/react'
 import data from '@emoji-mart/data'
 
@@ -129,8 +130,12 @@ const Message = ({ chatMessage, messageType }) => {
 
   return (
     <MessageWrapper
-      onMouseEnter={() => setTooltipOpen(true)}
-      onMouseLeave={() => setTooltipOpen(false)}
+      onMouseEnter={() => {
+        setTooltipOpen(true)
+      }}
+      onMouseLeave={() => {
+        setTooltipOpen(false)
+      }}
     >
       <Tooltip
         open={tooltipOpen}
@@ -139,7 +144,11 @@ const Message = ({ chatMessage, messageType }) => {
         arrow
       >
         {messageType === MessageType.REGULAR_MESSAGE ? (
-          <p style={{ color: getColorByString(chatMessage.author) }}>
+          <p
+            style={{
+              color: getColorByString(chatMessage.author),
+            }}
+          >
             {chatMessage.author}: <span>{chatMessage.content}</span>
           </p>
         ) : (
@@ -155,6 +164,7 @@ const Message = ({ chatMessage, messageType }) => {
 export default function Chat() {
   const [inputValue, setInputValue] = useState('')
   const [showEmojiPicker, setShowEmojiPicker] = useState(false)
+  const [readyToSubmit, setReadyToSubmit] = useState(false)
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLInputElement>(null)
   const chatMessages = useAppSelector((state) => state.chat.chatMessages)
@@ -169,6 +179,7 @@ export default function Chat() {
 
   const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
     if (event.key === 'Escape') {
+      // move focus back to the game
       inputRef.current?.blur()
       dispatch(setShowChat(false))
     }
@@ -176,6 +187,17 @@ export default function Chat() {
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault()
+
+    // this is added because without this, 2 things happen at the same
+    // time when Enter is pressed, (1) the inputRef gets focus (from
+    // useEffect) and (2) the form gets submitted (right after the input
+    // gets focused)
+    if (!readyToSubmit) {
+      setReadyToSubmit(true)
+      return
+    }
+    // move focus back to the game
+    inputRef.current?.blur()
 
     const val = inputValue.trim()
     setInputValue('')
@@ -190,7 +212,9 @@ export default function Chat() {
   }
 
   useEffect(() => {
-    if (focused) inputRef.current?.focus()
+    if (focused) {
+      inputRef.current?.focus()
+    }
   }, [focused])
 
   useEffect(() => {
@@ -204,7 +228,12 @@ export default function Chat() {
           <>
             <ChatHeader>
               <h3>Chat</h3>
-              <IconButton className="close" onClick={() => dispatch(setShowChat(false))} size="small">
+              <IconButton
+                aria-label="close dialog"
+                className="close"
+                onClick={() => dispatch(setShowChat(false))}
+                size="small"
+              >
                 <CloseIcon />
               </IconButton>
             </ChatHeader>
@@ -214,36 +243,57 @@ export default function Chat() {
               ))}
               <div ref={messagesEndRef} />
               {showEmojiPicker && (
-                <EmojiPickerWrapper>
-                  <Picker
-                    onEmojiSelect={(emoji) => {
-                      setInputValue((prev) => prev + emoji.native)
-                      setShowEmojiPicker(false)
-                      inputRef.current?.focus()
-                    }}
-                    theme="dark"
-                  />
-                </EmojiPickerWrapper>
+                  <EmojiPickerWrapper>
+                    <Picker
+                      data={data}
+                      onEmojiSelect={(emoji: any) => {
+                        setInputValue(inputValue + emoji.native)
+                        setShowEmojiPicker(false)
+                        dispatch(setFocused(true))
+                      }}
+                      theme="dark"
+                      previewPosition="none"
+                      skinTonePosition="none"
+                      searchPosition="none"
+                    />
+                  </EmojiPickerWrapper>
               )}
             </ChatBox>
             <InputWrapper onSubmit={handleSubmit}>
               <InputTextField
-                ref={inputRef}
-                autoFocus
+                inputRef={inputRef}
+                autoFocus={focused}
                 fullWidth
                 placeholder="Press Enter to chat"
                 value={inputValue}
                 onKeyDown={handleKeyDown}
                 onChange={handleChange}
+                onFocus={() => {
+                  if (!focused) {
+                    dispatch(setFocused(true))
+                    setReadyToSubmit(true)
+                  }
+                }}
+                onBlur={() => {
+                  dispatch(setFocused(false))
+                  setReadyToSubmit(false)
+                }}
               />
-              <IconButton onClick={() => setShowEmojiPicker(!showEmojiPicker)}>
+              <IconButton aria-label="emoji" onClick={() => setShowEmojiPicker(!showEmojiPicker)}>
                 <InsertEmoticonIcon />
               </IconButton>
             </InputWrapper>
           </>
         ) : (
           <FabWrapper>
-            <Fab color="secondary" onClick={() => dispatch(setShowChat(true))}>
+            <Fab
+              color="secondary"
+              aria-label="showChat"
+              onClick={() => {
+                dispatch(setShowChat(true))
+                dispatch(setFocused(true))
+              }}
+            >
               <ChatBubbleOutlineIcon />
             </Fab>
           </FabWrapper>
