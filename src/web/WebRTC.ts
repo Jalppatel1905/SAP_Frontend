@@ -17,12 +17,12 @@ export default class WebRTC {
     this.myPeer = new Peer(sanitizedId)
     this.network = network
 
+    this.myVideo.muted = true // Keep user's own video always muted
+
     this.myPeer.on('error', (err) => {
-      console.log(err.type)
-      console.error(err)
+      console.error('Peer error:', err)
     })
 
-    this.myVideo.muted = true
     this.initialize()
   }
 
@@ -55,7 +55,11 @@ export default class WebRTC {
     navigator.mediaDevices
       ?.getUserMedia({
         video: true,
-        audio: true,
+        audio: {
+          echoCancellation: true,
+          noiseSuppression: true,
+          autoGainControl: true
+        }
       })
       .then((stream) => {
         this.myStream = stream
@@ -87,7 +91,10 @@ export default class WebRTC {
   addVideoStream(video: HTMLVideoElement, stream: MediaStream) {
     video.srcObject = stream
     video.playsInline = true
-    video.muted = false
+
+    // ✅ Only unmute other users' videos, not your own
+    video.muted = (video === this.myVideo)
+
     this.myVideo.style.transform = 'scaleX(-1)'
     this.myVideo.style.objectFit = 'cover'
 
@@ -138,22 +145,18 @@ export default class WebRTC {
 
   deleteVideoStream(userId: string) {
     const sanitizedId = this.replaceInvalidId(userId)
-    if (this.peers.has(sanitizedId)) {
-      const peer = this.peers.get(sanitizedId)
-      peer?.call.close()
-      peer?.video.remove()
-      this.peers.delete(sanitizedId)
-    }
+    const peer = this.peers.get(sanitizedId)
+    peer?.call.close()
+    peer?.video.remove()
+    this.peers.delete(sanitizedId)
   }
 
   deleteOnCalledVideoStream(userId: string) {
     const sanitizedId = this.replaceInvalidId(userId)
-    if (this.onCalledPeers.has(sanitizedId)) {
-      const onCalledPeer = this.onCalledPeers.get(sanitizedId)
-      onCalledPeer?.call.close()
-      onCalledPeer?.video.remove()
-      this.onCalledPeers.delete(sanitizedId)
-    }
+    const onCalledPeer = this.onCalledPeers.get(sanitizedId)
+    onCalledPeer?.call.close()
+    onCalledPeer?.video.remove()
+    this.onCalledPeers.delete(sanitizedId)
   }
 
   setUpButtons() {
